@@ -24,28 +24,32 @@ public class SudokuBuilder {
         buildRandomSolvedGrid();
 
         //remove cells from the grid
-        removeRandomCells(9, 14); //change the arguments here for lower/higher difficulty
+        removeRandomCells(15, 19); //change the arguments here for lower/higher difficulty
     }
 
     private void buildRandomSolvedGrid() {
         mGrid = new int[mGridRowCount][mGridColumnCount];
-        int numberOfCellsToFill = (int) Math.ceil(Math.random() * 2) + 3; //decides how many numbers to place
-        int numberMax = mGridColumnCount > mGridRowCount ? mGridColumnCount : mGridRowCount; //highest value the number can be
+        int numCellsToFill = (int) Math.ceil(Math.random() * 2) + 3; //decides how many numbers to place
+        int numMax = mGridColumnCount > mGridRowCount ? mGridColumnCount : mGridRowCount; //highest value the number can be
+        int firstBoxMinNumCount = 2; //the minimum amount of numbers that should be in the first box, so the grid is more random
+        int firstBoxNumCount = 0;
         Sudoku sudoku;
 
         clearGrid();
 
         //create a random solved grid:
         //add the numbers in random places
-        for (int i = 0; i < numberOfCellsToFill; i++) {
-            int rowPos = (int) Math.ceil(Math.random() * mGridRowCount) - 1;
-            int columnPos = (int) Math.ceil(Math.random() * mGridColumnCount) - 1;
-            int number = (int) Math.ceil(Math.random() * numberMax);
-            if (isNumberValid(rowPos, columnPos, number)) {
-                mGrid[rowPos][columnPos] = number;
-            } else {
-                i--; //rerun this iteration
-            }
+        addRandomNumbers(mGridRowCount, mGridColumnCount, numCellsToFill, numMax);
+
+        //make sure that at least 2 random numbers are in the top left box,
+        //because of the starting point in the solve function, that box fills first and is usually not random
+        firstBoxNumCount = getBoxNumberCount(0, 0);
+        if (firstBoxNumCount < firstBoxMinNumCount) {
+            addRandomNumbers(
+                    mBoxRowCount, mBoxColumnCount,
+                    firstBoxMinNumCount - firstBoxNumCount,
+                    numMax
+            );
         }
 
         //solve the grid
@@ -54,6 +58,19 @@ public class SudokuBuilder {
             mGrid = sudoku.getGrid();
         } else {
             buildRandomGrid(mGridRowCount, mGridColumnCount);
+        }
+    }
+
+    private void addRandomNumbers(int rowCount, int columnCount, int numberOfCellsToFill, int numberMax) {
+        for (int i = 0; i < numberOfCellsToFill; i++) {
+            int rowPos = (int) Math.ceil(Math.random() * rowCount) - 1;
+            int columnPos = (int) Math.ceil(Math.random() * columnCount) - 1;
+            int number = (int) Math.ceil(Math.random() * numberMax);
+            if (isNumberValid(rowPos, columnPos, number)) {
+                mGrid[rowPos][columnPos] = number;
+            } else {
+                i--; //rerun this iteration
+            }
         }
     }
 
@@ -140,6 +157,22 @@ public class SudokuBuilder {
             }
         }
         return false;
+    }
+
+    private int getBoxNumberCount(int row, int column) {
+        int boxRow = row - (row % mBoxRowCount);
+        int boxColumn = column - (column % mBoxColumnCount);
+        int boxNumberCount = 0; //amount of numbers in the box
+
+        for (int i = boxRow; i < boxRow + mBoxRowCount; i++) {
+            for (int j = boxColumn; j < boxColumn + mBoxColumnCount; j++) {
+                if (mGrid[i][j] != EMPTY_CELL_KEY) {
+                    boxNumberCount++;
+                }
+            }
+        }
+
+        return boxNumberCount;
     }
 
     private void clearGrid() {

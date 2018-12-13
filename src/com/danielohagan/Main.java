@@ -69,6 +69,11 @@ public class Main {
         SudokuBuilder sudokuBuilder1 = new SudokuBuilder();
         Sudoku sudoku;
         sudokuBuilder1.buildRandomGrid(9, 9);
+        sudokuBuilder1.printToSystem();
+
+        System.out.println();
+        System.out.println();
+
         sudoku = new Sudoku(sudokuBuilder1.getGrid());
         sudoku.solveRecursively();
         sudoku.printToSystem();
