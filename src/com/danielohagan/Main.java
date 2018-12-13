@@ -36,7 +36,14 @@ public class Main {
     private static Sudoku mSudoku;
 
     public static void main(String[] args) {
-//        Sudoku class testing
+
+        /*
+        commented code because recursive backtracking is slow,
+        remove the comments to view the results
+         */
+
+
+//        Sudoku class
 //        mSudoku = new Sudoku(GRID_TO_SOLVE_3x3);
 //        mSudoku.printToSystem();
 //        if (mSudoku.solveRecursively()) {
@@ -53,9 +60,17 @@ public class Main {
 //        System.out.println();
 //        System.out.println("Number of cells solved: " + mSudoku.getCellSolveCount());
 
-//        SudokuBuilder class testing;
-        SudokuBuilder sudokuBuilder = new SudokuBuilder();
-        sudokuBuilder.buildRandomGrid(9, 9);
-        sudokuBuilder.printToSystem();
+//        SudokuBuilder class
+//        SudokuBuilder sudokuBuilder = new SudokuBuilder();
+//        sudokuBuilder.buildRandomGrid(9, 9);
+//        sudokuBuilder.printToSystem();
+
+        //both in use
+        SudokuBuilder sudokuBuilder1 = new SudokuBuilder();
+        Sudoku sudoku;
+        sudokuBuilder1.buildRandomGrid(9, 9);
+        sudoku = new Sudoku(sudokuBuilder1.getGrid());
+        sudoku.solveRecursively();
+        sudoku.printToSystem();
     }
 }

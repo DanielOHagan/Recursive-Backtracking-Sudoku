@@ -1,4 +1,4 @@
-package com.company;
+package com.danielohagan;
 
 public class SudokuBuilder {
 
@@ -8,6 +8,9 @@ public class SudokuBuilder {
     int mGridRowCount, mGridColumnCount, mGridBoxCountX, mGridBoxCountY;
     int mBoxRowCount, mBoxColumnCount; //num of rows and columns in a box
 
+    public int[][] getGrid() {
+        return mGrid;
+    }
 
     public void buildRandomGrid(int gridRowCount, int gridColumnCount) {
         mGridRowCount = gridRowCount;
