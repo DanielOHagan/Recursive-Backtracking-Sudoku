@@ -24,7 +24,10 @@ public class SudokuBuilder {
         buildRandomSolvedGrid();
 
         //remove cells from the grid
-        removeRandomCells(15, 19); //change the arguments here for lower/higher difficulty
+        removeRandomCells(
+                0, 0, mGridRowCount, mGridColumnCount,
+                15, 19
+        );//change the last two arguments here for lower/higher difficulty
     }
 
     private void buildRandomSolvedGrid() {
@@ -41,8 +44,15 @@ public class SudokuBuilder {
         //add the numbers in random places
         addRandomNumbers(mGridRowCount, mGridColumnCount, numCellsToFill, numMax);
 
-        //make sure that at least 2 random numbers are in the top left box,
-        //because of the starting point in the solve function, that box fills first and is usually not random
+        //make sure that no boxes are completely full
+        for (int i = 0; i < mGridRowCount; i += mBoxRowCount) {
+            for (int j = 0; j < mGridColumnCount; j += mBoxColumnCount) {
+                if (getBoxNumberCount(i, j) == 9) {//removes 1 or 2 cells if the box contains 9
+                    removeRandomCells(i, j, mBoxRowCount, mGridColumnCount, 7, 8);
+                }
+            }
+        }
+
         firstBoxNumCount = getBoxNumberCount(0, 0);
         if (firstBoxNumCount < firstBoxMinNumCount) {
             addRandomNumbers(
@@ -66,7 +76,7 @@ public class SudokuBuilder {
             int rowPos = (int) Math.ceil(Math.random() * rowCount) - 1;
             int columnPos = (int) Math.ceil(Math.random() * columnCount) - 1;
             int number = (int) Math.ceil(Math.random() * numberMax);
-            if (isNumberValid(rowPos, columnPos, number)) {
+            if (mGrid[rowPos][columnPos] == EMPTY_CELL_KEY && isNumberValid(rowPos, columnPos, number)) {
                 mGrid[rowPos][columnPos] = number;
             } else {
                 i--; //rerun this iteration
@@ -74,16 +84,19 @@ public class SudokuBuilder {
         }
     }
 
-    private void removeRandomCells(int minNumUsedCells, int maxNumUsedCells) {
+    private void removeRandomCells(
+            int startRow, int startColumn, int rowCount,
+            int columnCount, int minNumUsedCells, int maxNumUsedCells
+    ) {
         int range = (maxNumUsedCells - minNumUsedCells) > 0 ? (maxNumUsedCells - minNumUsedCells) : 5; //a check for if the two values were input wrong
-        int numOfCells = mGridColumnCount * mGridRowCount;
+        int numOfCells = rowCount * columnCount;
         int numOfCellsRemoving = numOfCells - (
                 minNumUsedCells + (int) Math.ceil(Math.random() * range)
         );
 
         for (int i = 0; i < numOfCellsRemoving; i++) {
-            int rowPos = (int) Math.ceil(Math.random() * mGridRowCount) - 1;
-            int columnPos = (int) Math.ceil(Math.random() * mGridColumnCount) - 1;
+            int rowPos = ((int) Math.ceil(Math.random() * rowCount) - 1) + startRow;
+            int columnPos = ((int) Math.ceil(Math.random() * columnCount) - 1) + startColumn;
 
             if (mGrid[rowPos][columnPos] != EMPTY_CELL_KEY) {
                 mGrid[rowPos][columnPos] = EMPTY_CELL_KEY;
